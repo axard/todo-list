@@ -71,3 +71,8 @@ generate-client:
 	@echo "| Генерация кода клиента по спецификации API |"
 	@echo "+--------------------------------------------+"
 	swagger generate client --skip-models --model-package=restmodels -f api/swagger.yaml -t internal -A TodoList
+
+FLAVOR = swagger
+
+ui:
+	swagger serve ./api/swagger.yaml --flavor=$(FLAVOR)
