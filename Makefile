@@ -1,25 +1,29 @@
 MODULE = github.com/axard/todo-list
 
-OUT = out
+COMMON_DIRS = internal/store internal/restmodels
+COMMON_FILES = $(shell find $(COMMON_DIRS) -type f -name "*.go")
 
-.PHONY = clean, tidy, check, install
+CLIENT_DIRS = internal/client cmd/todo-list-client
+CLIENT_FILES = $(shell find $(CLIENT_DIRS) -type f -name '*.go')
 
-build: $(OUT)/todo-list-server $(OUT)/todo-list-client
+SERVER_DIRS = internal/restapi cmd/todo-list-server
+SERVER_FILES = $(shell find $(SERVER_DIRS) -type f -name '*.go')
 
-$(OUT)/todo-list-server: cmd/todo-list-server/main.go | $(OUT)/
+.PHONY = build, server, client, clean, tidy, check, install
+
+build: server client
+
+server: $(COMMON_FILES) $(SERVER_FILES)
 	@echo "+----------------------------+"
 	@echo "| Сборка сервера «todo-list» |"
 	@echo "+----------------------------+"
-	go build -o $@ ./cmd/todo-list-server
+	go build -o server ./cmd/todo-list-server
 
-$(OUT)/todo-list-client: cmd/todo-list-client/main.go | $(OUT)/
+client: $(COMMON_FILES) $(CLIENT_FILES)
 	@echo "+----------------------------+"
 	@echo "| Сборка клиента «todo-list» |"
 	@echo "+----------------------------+"
-	go build -o $@ ./cmd/todo-list-client
-
-$(OUT)/:
-	@mkdir -p $@
+	go build -o client ./cmd/todo-list-client
 
 tidy:
 	@echo "+----------------------+"
@@ -28,7 +32,8 @@ tidy:
 	go mod tidy
 
 clean:
-	-rm -rf $(OUT)/
+	-rm -rf server
+	-rm -rf client
 
 check: check-golang-code check-swagger-spec
 
