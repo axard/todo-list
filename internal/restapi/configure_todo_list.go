@@ -9,13 +9,20 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/swag"
 
 	"github.com/axard/todo-list/internal/restapi/operations"
 	"github.com/axard/todo-list/internal/restapi/operations/todos"
+	"github.com/axard/todo-list/internal/restmodels"
+	"github.com/axard/todo-list/internal/store"
 )
 
 // nolint: lll
 //go:generate swagger generate server --target ../../internal --name TodoList --spec ../../api/swagger.yaml --model-package restmodels --principal interface{} --exclude-main
+
+var (
+	items = store.NewItems()
+)
 
 func configureFlags(api *operations.TodoListAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -39,29 +46,50 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.TodosCreateOneHandler == nil {
-		api.TodosCreateOneHandler = todos.CreateOneHandlerFunc(func(params todos.CreateOneParams) middleware.Responder {
-			return middleware.NotImplemented("operation todos.CreateOne has not yet been implemented")
-		})
-	}
+	api.TodosCreateOneHandler = todos.CreateOneHandlerFunc(func(params todos.CreateOneParams) middleware.Responder {
+		if err := items.Create(params.Body); err != nil {
+			return todos.NewCreateOneDefault(http.StatusInternalServerError).WithPayload(&restmodels.Error{
+				Code:    http.StatusInternalServerError,
+				Message: swag.String(err.Error()),
+			})
+		}
+		return todos.NewCreateOneCreated().WithPayload(params.Body)
+	})
 
-	if api.TodosDeleteOneHandler == nil {
-		api.TodosDeleteOneHandler = todos.DeleteOneHandlerFunc(func(params todos.DeleteOneParams) middleware.Responder {
-			return middleware.NotImplemented("operation todos.DeleteOne has not yet been implemented")
-		})
-	}
+	api.TodosDeleteOneHandler = todos.DeleteOneHandlerFunc(func(params todos.DeleteOneParams) middleware.Responder {
+		if err := items.Delete(params.ID); err != nil {
+			return todos.NewDeleteOneDefault(http.StatusInternalServerError).WithPayload(&restmodels.Error{
+				Code:    http.StatusInternalServerError,
+				Message: swag.String(err.Error()),
+			})
+		}
+		return todos.NewDeleteOneNoContent()
+	})
 
-	if api.TodosReadTodosHandler == nil {
-		api.TodosReadTodosHandler = todos.ReadTodosHandlerFunc(func(params todos.ReadTodosParams) middleware.Responder {
-			return middleware.NotImplemented("operation todos.ReadTodos has not yet been implemented")
-		})
-	}
+	api.TodosReadTodosHandler = todos.ReadTodosHandlerFunc(func(params todos.ReadTodosParams) middleware.Responder {
+		mergedParams := todos.NewReadTodosParams()
+		mergedParams.Since = swag.Int64(0)
 
-	if api.TodosUpdateOneHandler == nil {
-		api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams) middleware.Responder {
-			return middleware.NotImplemented("operation todos.UpdateOne has not yet been implemented")
-		})
-	}
+		if params.Since != nil {
+			mergedParams.Since = params.Since
+		}
+
+		if params.Limit != nil {
+			mergedParams.Limit = params.Limit
+		}
+
+		return todos.NewReadTodosOK().WithPayload(items.Read(*mergedParams.Since, *mergedParams.Limit))
+	})
+
+	api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams) middleware.Responder {
+		if err := items.Update(params.ID, params.Body); err != nil {
+			return todos.NewUpdateOneDefault(http.StatusInternalServerError).WithPayload(&restmodels.Error{
+				Code:    http.StatusInternalServerError,
+				Message: swag.String(err.Error()),
+			})
+		}
+		return todos.NewUpdateOneOK().WithPayload(params.Body)
+	})
 
 	api.PreServerShutdown = func() {}
 
