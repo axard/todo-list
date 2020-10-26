@@ -6,18 +6,19 @@ import (
 	"sync/atomic"
 
 	"github.com/axard/todo-list/internal/restmodels"
+	"github.com/emirpasic/gods/maps/linkedhashmap"
 	"github.com/go-openapi/errors"
 )
 
 type Items struct {
-	items  map[int64]*restmodels.Item
+	items  *linkedhashmap.Map
 	lock   *sync.RWMutex
 	lastID int64
 }
 
 func NewItems() *Items {
 	return &Items{
-		items: make(map[int64]*restmodels.Item),
+		items: linkedhashmap.New(),
 		lock:  &sync.RWMutex{},
 	}
 }
@@ -36,7 +37,7 @@ func (i *Items) Create(item *restmodels.Item) error {
 
 	newID := i.newItemID()
 	item.ID = newID
-	i.items[newID] = item
+	i.items.Put(newID, item)
 
 	return nil
 }
@@ -49,13 +50,13 @@ func (i *Items) Update(id int64, item *restmodels.Item) error {
 	i.lock.Lock()
 	defer i.lock.Unlock()
 
-	_, exists := i.items[id]
+	_, exists := i.items.Get(id)
 	if !exists {
 		return errors.NotFound("not found: item %d", id)
 	}
 
 	item.ID = id
-	i.items[id] = item
+	i.items.Put(id, item)
 
 	return nil
 }
@@ -64,31 +65,33 @@ func (i *Items) Delete(id int64) error {
 	i.lock.Lock()
 	defer i.lock.Unlock()
 
-	_, exists := i.items[id]
+	_, exists := i.items.Get(id)
 	if !exists {
 		return errors.NotFound("not found: item %d", id)
 	}
 
-	delete(i.items, id)
+	i.items.Remove(id)
 
 	return nil
 }
 
-func (i *Items) Read(since int64, limit int32) (result []*restmodels.Item) {
+func (i *Items) Read(since int64, limit int32) []*restmodels.Item {
 	i.lock.RLock()
 	defer i.lock.RUnlock()
 
-	result = make([]*restmodels.Item, 0)
+	iter := i.items.Iterator()
+	result := make([]*restmodels.Item, 0, limit)
+	enough := func() bool { return len(result) >= int(limit) }
 
-	for id, item := range i.items {
-		if len(result) >= int(limit) {
-			return
-		}
-
-		if since == 0 || id > since {
-			result = append(result, item)
+	for iter.Next() && !enough() {
+		if since == 0 {
+			if v, ok := iter.Value().(*restmodels.Item); ok {
+				result = append(result, v)
+			}
+		} else {
+			since--
 		}
 	}
 
-	return
+	return result
 }

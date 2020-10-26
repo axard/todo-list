@@ -3,6 +3,7 @@ module github.com/axard/todo-list
 go 1.14
 
 require (
+	github.com/emirpasic/gods v1.12.0
 	github.com/go-openapi/errors v0.19.7
 	github.com/go-openapi/loads v0.19.5
 	github.com/go-openapi/runtime v0.19.23
