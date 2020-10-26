@@ -59,10 +59,7 @@ func init() {
           "200": {
             "description": "Список дел",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/item"
-              }
+              "$ref": "#/definitions/itemlist"
             }
           },
           "default": {
@@ -194,6 +191,25 @@ func init() {
           "type": "integer",
           "format": "int64",
           "readOnly": true
+        }
+      }
+    },
+    "itemlist": {
+      "type": "object",
+      "required": [
+        "items",
+        "total"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/item"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     }
@@ -241,10 +257,7 @@ func init() {
           "200": {
             "description": "Список дел",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/item"
-              }
+              "$ref": "#/definitions/itemlist"
             }
           },
           "default": {
@@ -376,6 +389,25 @@ func init() {
           "type": "integer",
           "format": "int64",
           "readOnly": true
+        }
+      }
+    },
+    "itemlist": {
+      "type": "object",
+      "required": [
+        "items",
+        "total"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/item"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     }

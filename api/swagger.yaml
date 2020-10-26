@@ -47,9 +47,7 @@ paths:
         200:
           description: Список дел
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/item"
+            $ref: "#/definitions/itemlist"
         default:
           description: Ошибка
           schema:
@@ -114,3 +112,16 @@ definitions:
         format: int64
       message:
         type: string
+  itemlist:
+    type: object
+    required:
+      - items
+      - total
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/item"
+      total:
+        type: integer
+        format: int64

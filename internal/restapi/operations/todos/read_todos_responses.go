@@ -25,7 +25,7 @@ type ReadTodosOK struct {
 	/*
 	  In: Body
 	*/
-	Payload []*restmodels.Item `json:"body,omitempty"`
+	Payload *restmodels.Itemlist `json:"body,omitempty"`
 }
 
 // NewReadTodosOK creates ReadTodosOK with default headers values
@@ -35,13 +35,13 @@ func NewReadTodosOK() *ReadTodosOK {
 }
 
 // WithPayload adds the payload to the read todos o k response
-func (o *ReadTodosOK) WithPayload(payload []*restmodels.Item) *ReadTodosOK {
+func (o *ReadTodosOK) WithPayload(payload *restmodels.Itemlist) *ReadTodosOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the read todos o k response
-func (o *ReadTodosOK) SetPayload(payload []*restmodels.Item) {
+func (o *ReadTodosOK) SetPayload(payload *restmodels.Itemlist) {
 	o.Payload = payload
 }
 
@@ -49,14 +49,11 @@ func (o *ReadTodosOK) SetPayload(payload []*restmodels.Item) {
 func (o *ReadTodosOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	payload := o.Payload
-	if payload == nil {
-		// return empty array
-		payload = make([]*restmodels.Item, 0, 50)
-	}
-
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
 	}
 }
 

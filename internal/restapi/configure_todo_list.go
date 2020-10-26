@@ -78,7 +78,12 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 			mergedParams.Limit = params.Limit
 		}
 
-		return todos.NewReadTodosOK().WithPayload(items.Read(*mergedParams.Since, *mergedParams.Limit))
+		itemlist := &restmodels.Itemlist{
+			Items: items.Read(*mergedParams.Since, *mergedParams.Limit),
+			Total: swag.Int64(items.Size()),
+		}
+
+		return todos.NewReadTodosOK().WithPayload(itemlist)
 	})
 
 	api.TodosUpdateOneHandler = todos.UpdateOneHandlerFunc(func(params todos.UpdateOneParams) middleware.Responder {

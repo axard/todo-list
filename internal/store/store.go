@@ -95,3 +95,7 @@ func (i *Items) Read(since int64, limit int32) []*restmodels.Item {
 
 	return result
 }
+
+func (i *Items) Size() int64 {
+	return int64(i.items.Size())
+}

@@ -44,9 +44,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for i := range resp.Payload {
+	fmt.Printf("Total: %d\n", *resp.Payload.Total)
+
+	for _, item := range resp.Payload.Items {
 		fmt.Println("{")
-		fmt.Printf("    ID: %d; Description: '%s'\n", resp.Payload[i].ID, swag.StringValue(resp.Payload[i].Description))
+		fmt.Printf("    ID: %d; Description: '%s'\n", item.ID, swag.StringValue(item.Description))
 		fmt.Println("}")
 	}
 }
