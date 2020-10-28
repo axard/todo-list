@@ -26,6 +26,7 @@ var deleteCmd = &cobra.Command{
 
 		p.SetID(id)
 
+		// nolint: errcheck
 		_, err := c.Todos.DeleteOne(p)
 		if err != nil {
 			log.Println(err)
