@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/axard/todo-list/cmd/todo-list-client/internal/transport"
+	"github.com/axard/todo-list/cmd/client/internal/transport"
 	"github.com/axard/todo-list/internal/client"
 	"github.com/axard/todo-list/internal/client/todos"
 	"github.com/go-openapi/strfmt"
