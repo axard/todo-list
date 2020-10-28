@@ -32,7 +32,6 @@ func main() {
 	parser.LongDescription = "From the todo list tutorial on goswagger.io"
 
 	server.ConfigureFlags()
-	log.Println("Configure flags - done!")
 
 	// nolint: gocritic
 	for _, optsGroup := range api.CommandLineOptionsGroups {
@@ -55,7 +54,6 @@ func main() {
 	}
 
 	server.ConfigureAPI()
-	log.Println("Configure API - done!")
 
 	// serve API
 	if err := server.Serve(); err != nil {
