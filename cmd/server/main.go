@@ -1,16 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/axard/todo-list/internal/restapi"
 	"github.com/axard/todo-list/internal/restapi/operations"
+	"github.com/axard/todo-list/pkg/version"
 	"github.com/go-openapi/loads"
 	"github.com/jessevdk/go-flags"
 )
 
 func main() {
+	fmt.Printf("Version: %s\n", version.Version)
+
 	// load embedded swagger file
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
