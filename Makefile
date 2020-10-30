@@ -223,14 +223,9 @@ check-code:
 	@echo
 	@echo "linting golang code"
 	@docker run                                                 \
-	    -i                                                      \
 	    --rm                                                    \
-	    -u $$(id -u):$$(id -g)                                  \
 	    -v $$(pwd):/app                                         \
 	    -w /app                                                 \
-	    -v $$(pwd)/.go/bin/$(OS)_$(ARCH):/go/bin                \
-	    -v $$(pwd)/.go/bin/$(OS)_$(ARCH):/go/bin/$(OS)_$(ARCH)  \
-	    -v $$(pwd)/.go/cache:/.cache                            \
 	    --env HTTP_PROXY=$(HTTP_PROXY)                          \
 	    --env HTTPS_PROXY=$(HTTPS_PROXY)                        \
 	    $(GOLANGCI_IMAGE)                                       \
