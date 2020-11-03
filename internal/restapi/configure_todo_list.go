@@ -78,8 +78,16 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 			mergedParams.Limit = params.Limit
 		}
 
+		sample, err := items.Read(*mergedParams.Since, *mergedParams.Limit)
+		if err != nil {
+			return todos.NewReadTodosDefault(http.StatusInternalServerError).WithPayload(&restmodels.Error{
+				Code:    http.StatusInternalServerError,
+				Message: swag.String(err.Error()),
+			})
+		}
+
 		itemlist := &restmodels.Itemlist{
-			Items: items.Read(*mergedParams.Since, *mergedParams.Limit),
+			Items: sample,
 			Total: swag.Int64(items.Size()),
 		}
 

@@ -181,7 +181,8 @@ func init() {
       ],
       "properties": {
         "completed": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "description": {
           "type": "string",
@@ -379,7 +380,8 @@ func init() {
       ],
       "properties": {
         "completed": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "description": {
           "type": "string",

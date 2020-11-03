@@ -18,7 +18,7 @@ import (
 type Item struct {
 
 	// completed
-	Completed bool `json:"completed,omitempty"`
+	Completed *bool `json:"completed,omitempty"`
 
 	// description
 	// Required: true

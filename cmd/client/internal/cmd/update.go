@@ -33,7 +33,7 @@ var updateCmd = &cobra.Command{
 		p.SetID(id)
 		p.SetBody(&restmodels.Item{
 			Description: swag.String(args[0]),
-			Completed:   done,
+			Completed:   swag.Bool(done),
 		})
 
 		updated, err := c.Todos.UpdateOne(p)

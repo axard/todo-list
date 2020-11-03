@@ -102,6 +102,7 @@ definitions:
         minLength: 1
       completed:
         type: boolean
+        default: false
   error:
     type: object
     required:
