@@ -273,7 +273,7 @@ boilerplate-server: # @HELP Генерирует код сервера API по 
 boilerplate-server:
 	@echo
 	@echo "generating server code from openapi specification"
-	docker run                                                  \
+	@docker run                                                 \
 	    -it                                                     \
 	    --rm                                                    \
 	    -u $$(id -u):$$(id -g)                                  \
