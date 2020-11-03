@@ -52,6 +52,37 @@ func (i *Items) Create(item *restmodels.Item) error {
 	return nil
 }
 
+func (i *Items) Patch(id int64, completed *bool, description *string) (*restmodels.Item, error) {
+	i.lock.Lock()
+	defer i.lock.Unlock()
+
+	v, exists := i.items.Get(id)
+	if !exists {
+		return nil, errors.NotFound("not found: item %d", id)
+	}
+
+	stored, ok := v.(*Item)
+	if !ok {
+		return nil, errors.New(http.StatusInternalServerError, "ivalid stored item")
+	}
+
+	if completed != nil {
+		stored.Completed = *completed
+	}
+
+	if description != nil {
+		stored.Description = *description
+	}
+
+	result := &restmodels.Item{
+		ID:          id,
+		Completed:   &stored.Completed,
+		Description: &stored.Description,
+	}
+
+	return result, nil
+}
+
 func (i *Items) Update(id int64, item *restmodels.Item) error {
 	if item == nil {
 		return errors.New(http.StatusInternalServerError, "item must be present")
@@ -70,13 +101,8 @@ func (i *Items) Update(id int64, item *restmodels.Item) error {
 		return errors.New(http.StatusInternalServerError, "ivalid stored item")
 	}
 
-	if item.Completed != nil {
-		stored.Completed = *item.Completed
-	}
-
-	if item.Description != nil {
-		stored.Description = *item.Description
-	}
+	stored.Completed = swag.BoolValue(item.Completed)
+	stored.Description = swag.StringValue(item.Description)
 
 	item.ID = id
 

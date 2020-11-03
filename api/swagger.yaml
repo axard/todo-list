@@ -76,6 +76,30 @@ paths:
           description: Ошибка
           schema:
             $ref: "#/definitions/error"
+    patch:
+      tags: ["todos"]
+      operationId: patchOne
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+                minLength: 0
+              completed:
+                type: boolean
+                default: false
+      responses:
+        '200':
+          description: Ок
+          schema:
+            $ref: "#/definitions/item"
+        default:
+          description: Ошибка
+          schema:
+            $ref: "#/definitions/error"
     delete:
       tags:
         - todos

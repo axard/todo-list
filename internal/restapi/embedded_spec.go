@@ -147,6 +147,44 @@ func init() {
           }
         }
       },
+      "patch": {
+        "tags": [
+          "todos"
+        ],
+        "operationId": "patchOne",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "completed": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ок",
+            "schema": {
+              "$ref": "#/definitions/item"
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
       "parameters": [
         {
           "type": "integer",
@@ -337,6 +375,45 @@ func init() {
         "responses": {
           "204": {
             "description": "Удалено"
+          },
+          "default": {
+            "description": "Ошибка",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "todos"
+        ],
+        "operationId": "patchOne",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "completed": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 0
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ок",
+            "schema": {
+              "$ref": "#/definitions/item"
+            }
           },
           "default": {
             "description": "Ошибка",

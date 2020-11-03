@@ -50,6 +50,9 @@ func NewTodoListAPI(spec *loads.Document) *TodoListAPI {
 		TodosDeleteOneHandler: todos.DeleteOneHandlerFunc(func(params todos.DeleteOneParams) middleware.Responder {
 			return middleware.NotImplemented("operation todos.DeleteOne has not yet been implemented")
 		}),
+		TodosPatchOneHandler: todos.PatchOneHandlerFunc(func(params todos.PatchOneParams) middleware.Responder {
+			return middleware.NotImplemented("operation todos.PatchOne has not yet been implemented")
+		}),
 		TodosReadTodosHandler: todos.ReadTodosHandlerFunc(func(params todos.ReadTodosParams) middleware.Responder {
 			return middleware.NotImplemented("operation todos.ReadTodos has not yet been implemented")
 		}),
@@ -94,6 +97,8 @@ type TodoListAPI struct {
 	TodosCreateOneHandler todos.CreateOneHandler
 	// TodosDeleteOneHandler sets the operation handler for the delete one operation
 	TodosDeleteOneHandler todos.DeleteOneHandler
+	// TodosPatchOneHandler sets the operation handler for the patch one operation
+	TodosPatchOneHandler todos.PatchOneHandler
 	// TodosReadTodosHandler sets the operation handler for the read todos operation
 	TodosReadTodosHandler todos.ReadTodosHandler
 	// TodosUpdateOneHandler sets the operation handler for the update one operation
@@ -179,6 +184,9 @@ func (o *TodoListAPI) Validate() error {
 	}
 	if o.TodosDeleteOneHandler == nil {
 		unregistered = append(unregistered, "todos.DeleteOneHandler")
+	}
+	if o.TodosPatchOneHandler == nil {
+		unregistered = append(unregistered, "todos.PatchOneHandler")
 	}
 	if o.TodosReadTodosHandler == nil {
 		unregistered = append(unregistered, "todos.ReadTodosHandler")
@@ -282,6 +290,10 @@ func (o *TodoListAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/{id}"] = todos.NewDeleteOne(o.context, o.TodosDeleteOneHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"]["/{id}"] = todos.NewPatchOne(o.context, o.TodosPatchOneHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

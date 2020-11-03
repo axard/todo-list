@@ -101,7 +101,20 @@ func configureAPI(api *operations.TodoListAPI) http.Handler {
 				Message: swag.String(err.Error()),
 			})
 		}
+
 		return todos.NewUpdateOneOK().WithPayload(params.Body)
+	})
+
+	api.TodosPatchOneHandler = todos.PatchOneHandlerFunc(func(params todos.PatchOneParams) middleware.Responder {
+		item, err := items.Patch(params.ID, params.Body.Completed, params.Body.Description)
+		if err != nil {
+			return todos.NewPatchOneDefault(http.StatusInternalServerError).WithPayload(&restmodels.Error{
+				Code:    http.StatusInternalServerError,
+				Message: swag.String(err.Error()),
+			})
+		}
+
+		return todos.NewPatchOneOK().WithPayload(item)
 	})
 
 	api.PreServerShutdown = func() {}

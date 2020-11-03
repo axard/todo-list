@@ -29,6 +29,8 @@ type ClientService interface {
 
 	DeleteOne(params *DeleteOneParams) (*DeleteOneNoContent, error)
 
+	PatchOne(params *PatchOneParams) (*PatchOneOK, error)
+
 	ReadTodos(params *ReadTodosParams) (*ReadTodosOK, error)
 
 	UpdateOne(params *UpdateOneParams) (*UpdateOneOK, error)
@@ -99,6 +101,39 @@ func (a *Client) DeleteOne(params *DeleteOneParams) (*DeleteOneNoContent, error)
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*DeleteOneDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+  PatchOne patch one API
+*/
+func (a *Client) PatchOne(params *PatchOneParams) (*PatchOneOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPatchOneParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "patchOne",
+		Method:             "PATCH",
+		PathPattern:        "/{id}",
+		ProducesMediaTypes: []string{"application/io.goswagger.examples.todo-list.v1+json"},
+		ConsumesMediaTypes: []string{"application/io.goswagger.examples.todo-list.v1+json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &PatchOneReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*PatchOneOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*PatchOneDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
